@@ -1,0 +1,22 @@
+{
+  "name": "sit725-2024-t1-prac-3",
+  "version": "1.0.0",
+  "description": "bootstrap with html code",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Purvasha13/SIT725-2024-T1-prac-3.git"
+  },
+  "author": "Purvasha Padhy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Purvasha13/SIT725-2024-T1-prac-3/issues"
+  },
+  "homepage": "https://github.com/Purvasha13/SIT725-2024-T1-prac-3#readme",
+  "dependencies": {
+    "express": "^4.18.3"
+  }
+}
