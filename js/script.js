@@ -18,10 +18,9 @@ const cardList = [
      description: "I am a german shephard"
     }
  ];
- 
 
 const clickMe = () => {
-    alert("Thanks for clicking me. Have a nice day!!");
+    $('#mymodal').modal('open');
 };
 
 const addCards = (items) => {
@@ -39,10 +38,25 @@ const addCards = (items) => {
     });
 };
 
+const submitForm = () => {
+    let formData = {};
+    formData.first_name = $('#first_name').val();
+    formData.last_name = $('#last_name').val();
+    formData.password = $('#password').val();
+    formData.email = $('#email').val();
+
+    console.log(formData);
+};
+
 $(document).ready(function() {
     $('.materialboxed').materialbox();
     $('#clickMeButton').click(() => {
         clickMe();
     });
+    $('#formSubmit').click(() => {
+        submitForm();
+    });
     addCards(cardList);
+    $('.modal').modal();
+
 });
