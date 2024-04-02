@@ -1,7 +1,7 @@
 {
-  "name": "sit725-2024-t1-prac-3",
+  "name": "sit725-2024-t1-prac-4",
   "version": "1.0.0",
-  "description": "bootstrap with html code",
+  "description": "MongoDB Integration",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
