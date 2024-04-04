@@ -20,7 +20,7 @@ const cardList = [
  ];
 
 const clickMe = () => {
-    $('#mymodal').modal('open');
+    $('#addCardForm').modal('open');
 };
 
 const addCards = (items) => {
@@ -39,13 +39,30 @@ const addCards = (items) => {
 };
 
 const submitForm = () => {
-    let formData = {};
-    formData.first_name = $('#first_name').val();
-    formData.last_name = $('#last_name').val();
-    formData.password = $('#password').val();
-    formData.email = $('#email').val();
+    let formData = {
+        title: $('#title').val(),
+        color: $('#color').val(),
+        image: $('#image').val(),
+        description: $('#description').val()
+    };
 
-    console.log(formData);
+    // Send form data to the server
+    $.post('/api/cards', formData)
+        .done(function (data) {
+            console.log('Card added successfully:', data);
+            // Close modal after successful submission
+            $('#addCardForm').modal('close');
+            // Clear form fields
+            $('#title').val('');
+            $('#color').val('');
+            $('#image').val('');
+            $('#description').val('');
+            // Refresh the page to display the newly added card
+            window.location.reload();
+        })
+        .fail(function (xhr, status, error) {
+            console.error('Error adding card:', error);
+        });
 };
 
 $(document).ready(function() {
@@ -59,4 +76,9 @@ $(document).ready(function() {
     addCards(cardList);
     $('.modal').modal();
 
+    // Add event listener for form submission
+    $('#addCardForm').submit(function(event) {
+        event.preventDefault(); // Prevent default form submission
+        submitForm();
+    });
 });
