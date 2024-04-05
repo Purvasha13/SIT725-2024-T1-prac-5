@@ -38,34 +38,30 @@ const addCards = (items) => {
     });
 };
 
-const submitForm = () => {
-    let formData = {
-        title: $('#title').val(),
-        color: $('#color').val(),
-        image: $('#image').val(),
-        description: $('#description').val()
-    };
-
-    // Send form data to the server
-    $.post('/api/cards', formData)
-        .done(function (data) {
-            console.log('Card added successfully:', data);
-            // Close modal after successful submission
-            $('#addCardForm').modal('close');
-            // Clear form fields
-            $('#title').val('');
-            $('#color').val('');
-            $('#image').val('');
-            $('#description').val('');
-            // Refresh the page to display the newly added card
-            window.location.reload();
-        })
-        .fail(function (xhr, status, error) {
-            console.error('Error adding card:', error);
-        });
-};
-
 $(document).ready(function() {
+        // Fetch and display card details
+        $.get('/api/cards', function (cards) {
+            var cardSection = $('#card-section');
+            cards.forEach(card => {
+                var cardHtml = `
+                    <div class="col s4 center-align">
+                        <div class="card small">
+                            <div class="card-image waves-effect waves-block waves-light">
+                                <img class="activator" src="${card.image}" alt="Card Image">
+                            </div>
+                            <div class="card-content">
+                                <span class="card-title activator grey-text text-darken-4">${card.title}<i class="material-icons right"></i></span>
+                                <p><a href="#">About Me</a></p>
+                            </div>
+                            <div class="card-reveal">
+                                <span class="card-title activator grey-text text-darken-4">${card.title}<i class="material-icons right">close</i></span>
+                                <p class="card-text">${card.description}</p>
+                            </div>
+                        </div>
+                    </div>`;
+                cardSection.append(cardHtml);
+            });
+        });
     $('.materialboxed').materialbox();
     $('#clickMeButton').click(() => {
         clickMe();
@@ -76,9 +72,9 @@ $(document).ready(function() {
     addCards(cardList);
     $('.modal').modal();
 
-    // Add event listener for form submission
+    // Event listener for adding card
     $('#addCardForm').submit(function(event) {
-        event.preventDefault(); // Prevent default form submission
-        submitForm();
+        event.preventDefault();
+        // submitForm();
     });
 });

@@ -1,79 +1,54 @@
-
-const express = require("express");
-const app = express();
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const path = require("path"); // Import the path module
 
-const mongoose = require("mongoose");
-
-const dburl = "mongodb+srv://purvasha1013:Imp_560062@sit-725.b8fxacb.mongodb.net/";
-
-const conParam = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-};
-
-// Card data
-const cardList = [
-    {
-        title: "puppy",
-        image: "image/download.jpeg",
-        link: "About Me",
-        description: "I am a puppy !!"
-    }
- ];
-
-// Insert cards into the MongoDB collection
-async function addCardsToMongoDB() {
-    try {
-        // Insert each card data into the collection
-        await Card.insertMany(cardList);
-        console.log('Cards added to MongoDB');
-    } catch (error) {
-        console.error('Error adding cards to MongoDB:', error);
-    }
-}
-
-// Card Schema
-const cardSchema = new mongoose.Schema({
-    title: String,
-    image: String,
-    link: String,
-    description: String
-});
-
-// Create Card model
-const Card = mongoose.model('Card', cardSchema);
-
-mongoose.connect(dburl, conParam)
-    .then(() => {
-        console.info("Connected to the DB");
-    })
-    .catch((e) => {
-        console.log("Error:", e);
-    });
-
+const app = express();
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname)));
 
-// Define route to fetch card details
-app.get('/api/cards', async (req, res) => {
+// Connect to MongoDB
+mongoose.connect("mongodb+srv://purvasha1013:Imp_560062@sit-725.b8fxacb.mongodb.net/?retryWrites=true&w=majority&appName=deakin", { useNewUrlParser: true, useUnifiedTopology: true });
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => console.log('Connected to MongoDB'));
+
+// Define schema for cards
+const cardSchema = new mongoose.Schema({
+    title: String,
+    color: String,
+    image: String,
+    description: String
+});
+const Card = mongoose.model('Card', cardSchema);
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// Form submission
+app.post('/api/cards', async (req, res) => {
     try {
-        // Fetch all cards from MongoDB
-        const cards = await Card.find({});
-        res.json(cards); // Return fetched cards as JSON response
-    } catch (error) {
-        console.error('Error fetching cards:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        const { title, color, image, description } = req.body;
+        const newCard = new Card({ title, color, image, description });
+        await newCard.save();
+        res.status(201).json({ message: 'Card added successfully' });
+    } catch (err) {
+        console.error('Error adding card:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// Define route handler for the root URL
-app.get('/', (req, res) => {
-    // Send the HTML file when accessing the root URL
-    res.sendFile(path.join(__dirname, 'index.html'));
+// GET request to fetch all cards
+app.get('/api/cards', async (req, res) => {
+    try {
+        const cards = await Card.find();
+        res.status(200).json(cards);
+    } catch (err) {
+        console.error('Error fetching cards:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log("App running on port " + port);
-});
+
+const PORT = process.env.PORT || 3300;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
