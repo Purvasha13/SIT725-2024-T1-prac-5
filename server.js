@@ -1,54 +1,25 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 const bodyParser = require('body-parser');
-const path = require("path"); // Import the path module
+const cardRoutes = require('./routes/index');
 
 const app = express();
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname)));
 
-// Connect to MongoDB
-mongoose.connect("mongodb+srv://purvasha1013:Imp_560062@sit-725.b8fxacb.mongodb.net/?retryWrites=true&w=majority&appName=deakin", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://purvasha1013:Imp_560062@sit-725.b8fxacb.mongodb.net/?retryWrites=true&w=majority&appName=SIT-725');
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => console.log('Connected to MongoDB'));
 
-// Define schema for cards
-const cardSchema = new mongoose.Schema({
-    title: String,
-    color: String,
-    image: String,
-    description: String
-});
-const Card = mongoose.model('Card', cardSchema);
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Form submission
-app.post('/api/cards', async (req, res) => {
-    try {
-        const { title, color, image, description } = req.body;
-        const newCard = new Card({ title, color, image, description });
-        await newCard.save();
-        res.status(201).json({ message: 'Card added successfully' });
-    } catch (err) {
-        console.error('Error adding card:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+// // Serve static files from the 'public' directory
+// app.use(express.static(path.join(__dirname)));
 
-// GET request to fetch all cards
-app.get('/api/cards', async (req, res) => {
-    try {
-        const cards = await Card.find();
-        res.status(200).json(cards);
-    } catch (err) {
-        console.error('Error fetching cards:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+app.use('/', cardRoutes);
 
 
-const PORT = process.env.PORT || 3300;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
